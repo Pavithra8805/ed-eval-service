@@ -31,6 +31,11 @@ alembic/versions/*.pyc
 # Logs
 *.log
 
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+
 # OS
 .DS_Store
 Thumbs.db
