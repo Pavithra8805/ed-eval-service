@@ -16,7 +16,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.core.deps import get_current_user
 from app.database import get_db
@@ -46,9 +45,7 @@ def _session_to_dict(s: Session) -> dict:
     }
 
 
-async def _assert_session_access(
-    session: Session, current_user: User, db: AsyncSession
-) -> None:
+async def _assert_session_access(session: Session, current_user: User, db: AsyncSession) -> None:
     """Raise 403 if the current user is not allowed to access this session."""
     if current_user.role == UserRole.admin:
         return
@@ -59,9 +56,7 @@ async def _assert_session_access(
         return
 
     if current_user.role == UserRole.parent:
-        result = await db.execute(
-            select(Student).where(Student.id == session.student_id)
-        )
+        result = await db.execute(select(Student).where(Student.id == session.student_id))
         student = result.scalar_one_or_none()
         if not student or student.parent_id != current_user.id:
             raise HTTPException(status_code=403, detail="Access denied: not your child's session")
@@ -81,9 +76,7 @@ async def create_session(
     if current_user.role not in (UserRole.teacher, UserRole.admin):
         raise HTTPException(status_code=403, detail="Only teachers and admins can create sessions")
 
-    teacher_id = (
-        current_user.id if current_user.role == UserRole.teacher else current_user.id
-    )
+    teacher_id = current_user.id if current_user.role == UserRole.teacher else current_user.id
 
     session = Session(
         title=payload.title,

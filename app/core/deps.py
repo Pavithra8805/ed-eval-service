@@ -6,6 +6,7 @@ Usage:
     _           = Depends(require_roles("admin"))    # admin only
 """
 
+import uuid
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -33,8 +34,13 @@ async def get_current_user(
     if not payload:
         raise credentials_exc
 
-    user_id: str | None = payload.get("sub")
-    if user_id is None:
+    user_id_str: str | None = payload.get("sub")
+    if not user_id_str:
+        raise credentials_exc
+
+    try:
+        user_id = uuid.UUID(user_id_str)
+    except (ValueError, TypeError):
         raise credentials_exc
 
     result = await db.execute(select(User).where(User.id == user_id))

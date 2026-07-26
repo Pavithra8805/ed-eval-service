@@ -3,11 +3,11 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, Enum, Float, ForeignKey, Text
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.database import Base
+from app.models.types import GUID
 
 
 class EvaluationStatus(str, enum.Enum):
@@ -20,9 +20,7 @@ class EvaluationStatus(str, enum.Enum):
 class Evaluation(Base):
     __tablename__ = "evaluations"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(GUID, primary_key=True, default=uuid.uuid4)
     status: Mapped[EvaluationStatus] = mapped_column(
         Enum(EvaluationStatus), nullable=False, default=EvaluationStatus.pending
     )
@@ -39,7 +37,7 @@ class Evaluation(Base):
     )
 
     session_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("sessions.id", ondelete="CASCADE"), nullable=False
+        GUID, ForeignKey("sessions.id", ondelete="CASCADE"), nullable=False
     )
 
     # relationships

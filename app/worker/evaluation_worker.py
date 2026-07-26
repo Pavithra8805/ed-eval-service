@@ -16,7 +16,6 @@ import asyncio
 import logging
 import random
 import uuid
-from datetime import timezone
 
 from sqlalchemy import select
 

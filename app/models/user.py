@@ -2,10 +2,10 @@ import enum
 import uuid
 
 from sqlalchemy import Enum, String
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.types import GUID
 
 
 class UserRole(str, enum.Enum):
@@ -17,9 +17,7 @@ class UserRole(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(GUID, primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -30,8 +28,8 @@ class User(Base):
         "Student", back_populates="parent", foreign_keys="Student.parent_id"
     )
     sessions_taught: Mapped[list["Session"]] = relationship(  # noqa: F821
-        "Session", back_populates="teacher"
+        "Session", back_populates="teacher", foreign_keys="Session.teacher_id"
     )
 
     def __repr__(self) -> str:
-        return f"<User {self.email} ({self.role})>"
+        return f"<User {self.email} [{self.role}]>"

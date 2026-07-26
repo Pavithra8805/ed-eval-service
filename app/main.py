@@ -60,6 +60,7 @@ app.include_router(evaluations.router, prefix=PREFIX)
 
 # ── Health check ─────────────────────────────────────────────────────────────
 
+
 @app.get("/health", tags=["health"])
 async def health() -> dict:
     return {"status": "ok", "service": "ed-eval-service"}

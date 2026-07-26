@@ -46,6 +46,7 @@ async def close_redis() -> None:
 
 # ── Session cache helpers ────────────────────────────────────────────────────
 
+
 def _session_key(session_id: uuid.UUID | str) -> str:
     return f"session:{session_id}"
 
@@ -67,6 +68,7 @@ async def invalidate_session_cache(session_id: uuid.UUID | str) -> None:
 
 
 # ── Evaluation queue helpers ─────────────────────────────────────────────────
+
 
 async def enqueue_evaluation(evaluation_id: uuid.UUID | str) -> None:
     r = await get_redis()

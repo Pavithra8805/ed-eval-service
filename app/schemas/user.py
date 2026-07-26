@@ -1,10 +1,9 @@
 import uuid
-from datetime import datetime
 
 from pydantic import BaseModel, EmailStr
 
-
 # ── User Schemas ────────────────────────────────────────────────────────────
+
 
 class UserRegister(BaseModel):
     email: EmailStr
@@ -33,6 +32,7 @@ class Token(BaseModel):
 
 
 # ── Student Schemas ─────────────────────────────────────────────────────────
+
 
 class StudentCreate(BaseModel):
     full_name: str

@@ -69,9 +69,7 @@ async def get_evaluation(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> Evaluation:
-    result = await db.execute(
-        select(Evaluation).where(Evaluation.id == evaluation_id)
-    )
+    result = await db.execute(select(Evaluation).where(Evaluation.id == evaluation_id))
     evaluation = result.scalar_one_or_none()
     if not evaluation:
         raise HTTPException(status_code=404, detail="Evaluation not found")
