@@ -1,7 +1,7 @@
 """
 generate_note.py
 ----------------
-Generates the submission written note as a PDF using ReportLab.
+Generates a polished submission PDF using ReportLab for the Bodhrik assessment.
 Run: py generate_note.py
 """
 
@@ -17,10 +17,10 @@ OUTPUT = "submission_note.pdf"
 doc = SimpleDocTemplate(
     OUTPUT,
     pagesize=A4,
-    leftMargin=2.5 * cm,
-    rightMargin=2.5 * cm,
-    topMargin=2.5 * cm,
-    bottomMargin=2.5 * cm,
+    leftMargin=2.2 * cm,
+    rightMargin=2.2 * cm,
+    topMargin=2.2 * cm,
+    bottomMargin=2.2 * cm,
 )
 
 styles = getSampleStyleSheet()
@@ -28,9 +28,10 @@ styles = getSampleStyleSheet()
 title_style = ParagraphStyle(
     "Title",
     parent=styles["Heading1"],
-    fontSize=18,
-    textColor=colors.HexColor("#1a1a2e"),
-    spaceAfter=6,
+    fontSize=20,
+    leading=24,
+    textColor=colors.HexColor("#1A2B4C"),
+    spaceAfter=4,
     alignment=TA_CENTER,
 )
 
@@ -38,246 +39,206 @@ subtitle_style = ParagraphStyle(
     "Subtitle",
     parent=styles["Normal"],
     fontSize=11,
-    textColor=colors.HexColor("#555555"),
-    spaceAfter=12,
+    leading=15,
+    textColor=colors.HexColor("#4A5568"),
+    spaceAfter=10,
     alignment=TA_CENTER,
+)
+
+meta_style = ParagraphStyle(
+    "Meta",
+    parent=styles["Normal"],
+    fontSize=10,
+    leading=14,
+    textColor=colors.HexColor("#2D3748"),
+    alignment=TA_CENTER,
+    spaceAfter=8,
 )
 
 h2_style = ParagraphStyle(
     "H2",
     parent=styles["Heading2"],
-    fontSize=13,
-    textColor=colors.HexColor("#16213e"),
-    spaceBefore=16,
-    spaceAfter=6,
-    borderPad=2,
+    fontSize=12.5,
+    leading=16,
+    textColor=colors.HexColor("#1A2B4C"),
+    spaceBefore=12,
+    spaceAfter=5,
 )
 
 body_style = ParagraphStyle(
     "Body",
     parent=styles["Normal"],
-    fontSize=10.5,
-    leading=16,
-    spaceAfter=8,
+    fontSize=10,
+    leading=14.5,
+    spaceAfter=6,
     alignment=TA_JUSTIFY,
-    textColor=colors.HexColor("#2d2d2d"),
+    textColor=colors.HexColor("#2D3748"),
 )
 
 bullet_style = ParagraphStyle(
     "Bullet",
     parent=styles["Normal"],
-    fontSize=10.5,
-    leading=15,
-    leftIndent=18,
+    fontSize=9.5,
+    leading=14,
+    leftIndent=14,
     spaceAfter=4,
-    textColor=colors.HexColor("#2d2d2d"),
+    textColor=colors.HexColor("#2D3748"),
 )
 
 content = []
 
-# ── Title ──────────────────────────────────────────────────────────────────────
-content.append(Paragraph("ed-eval-service", title_style))
-content.append(Paragraph("Technical Written Note — Bodhrik Full Stack Assessment", subtitle_style))
-content.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#0f3460")))
-content.append(Spacer(1, 0.4 * cm))
-content.append(
-    Paragraph(
-        "<b>Candidate:</b> Sai Pavithra G &nbsp;&nbsp;|&nbsp;&nbsp; "
-        "<b>GitHub:</b> github.com/Pavithra8805/ed-eval-service &nbsp;&nbsp;|&nbsp;&nbsp; "
-        "<b>Stack:</b> FastAPI · PostgreSQL · Redis · Docker",
-        subtitle_style,
-    )
-)
+# ── Title & Metadata ─────────────────────────────────────────────────────────
+content.append(Paragraph("<b>Education Evaluation Service</b>", title_style))
+content.append(Paragraph("Technical Note — Bodhrik Full Stack Assessment", subtitle_style))
+content.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#2B6CB0")))
 content.append(Spacer(1, 0.3 * cm))
 
-# ── Section 1 ─────────────────────────────────────────────────────────────────
-content.append(Paragraph("1. Schema Design &amp; Normalization Trade-offs", h2_style))
-content.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#cccccc")))
+github_link = '<a href="https://github.com/Pavithra8805/ed-eval-service" color="#2B6CB0"><u>https://github.com/Pavithra8805/ed-eval-service</u></a>'
+content.append(
+    Paragraph(
+        f"<b>Candidate:</b> G Sai Pavithra &nbsp;&nbsp;|&nbsp;&nbsp; "
+        f"<b>GitHub Repository:</b> {github_link}<br/>"
+        f"<b>Tech Stack:</b> FastAPI · PostgreSQL · Redis · Docker · Pytest",
+        meta_style,
+    )
+)
 content.append(Spacer(1, 0.2 * cm))
 
+# ── Section 1 ─────────────────────────────────────────────────────────────────
+content.append(Paragraph("1. Database Schema Design &amp; Normalization", h2_style))
+content.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#CBD5E0")))
+content.append(Spacer(1, 0.15 * cm))
+
 content.append(
     Paragraph(
-        "The schema follows <b>Third Normal Form (3NF)</b>, with four core tables: "
-        "<i>users</i>, <i>students</i>, <i>sessions</i>, and <i>evaluations</i>.",
+        "The database follows <b>Third Normal Form (3NF)</b> to ensure data consistency and eliminate redundancy. "
+        "The system consists of four primary entities: <b>users</b>, <b>students</b>, <b>sessions</b>, and <b>evaluations</b>.",
         body_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>users</b> is the single source of truth for identity and role. Roles are stored as a "
-        "Postgres ENUM (<i>admin</i>, <i>teacher</i>, <i>parent</i>), enforced at the DB level — "
-        "not just in application code — so invalid states are impossible.",
-        body_style,
+        "• <b>users Table:</b> Acts as the central identity system storing authentication credentials and account roles "
+        "(<i>admin</i>, <i>teacher</i>, <i>parent</i>). Enforcing roles at the database level prevents invalid authorization states.",
+        bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>students</b> is kept separate from users because a student is a platform entity (a "
-        "child learner) but is <i>not</i> an authenticated actor. Merging students into the users "
-        "table would violate single-responsibility and pollute the auth model. The student row "
-        "holds a <i>parent_id</i> FK to users, which is the single join needed for parent RBAC checks.",
-        body_style,
+        "• <b>students Table:</b> Modeled separately from users because students are learners, not login accounts. "
+        "Each student references their parent's account via a <i>parent_id</i> foreign key, enabling clear ownership and parental access controls.",
+        bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>sessions</b> records a tutoring interaction between one teacher and one student. "
-        "<i>teacher_id</i> and <i>student_id</i> are direct FKs — no junction table — because "
-        "the session is inherently 1:1 in this model. If the platform later needs group sessions, "
-        "a <i>session_participants</i> junction table would be the natural extension.",
-        body_style,
+        "• <b>sessions Table:</b> Represents 1:1 tutoring sessions between a teacher and a student. "
+        "Direct foreign keys (<i>teacher_id</i>, <i>student_id</i>) eliminate unneeded complexity while making schedule queries fast.",
+        bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>evaluations</b> are intentionally separated from sessions. A single session can produce "
-        "multiple evaluation runs (retry, re-grade), and each evaluation has its own lifecycle "
-        "state (<i>pending → processing → completed/failed</i>). Embedding evaluation fields on "
-        "the session row would preclude this and violate 2NF.",
-        body_style,
+        "• <b>evaluations Table:</b> Kept distinct from sessions to allow multiple evaluation attempts per session (e.g. re-grading). "
+        "Each evaluation tracks its own asynchronous lifecycle: <i>pending → processing → completed / failed</i>.",
+        bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>Key trade-off:</b> UUIDs are used as primary keys throughout. This adds ~16 bytes per "
-        "row versus an integer sequence, but eliminates enumerable IDs in API URLs (a security "
-        "property), and makes distributed ID generation safe without coordination.",
-        body_style,
+        "• <b>UUID Primary Keys:</b> Using UUIDs instead of auto-incrementing integers prevents ID guessing in public API endpoints "
+        "and allows reliable, distributed primary key generation across services.",
+        bullet_style,
     )
 )
 
 # ── Section 2 ─────────────────────────────────────────────────────────────────
-content.append(
-    Paragraph("2. RBAC Evolution: Adding a Fourth Role or Nested Organisations", h2_style)
-)
-content.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#cccccc")))
-content.append(Spacer(1, 0.2 * cm))
+content.append(Paragraph("2. Scaling Role-Based Access Control (RBAC)", h2_style))
+content.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#CBD5E0")))
+content.append(Spacer(1, 0.15 * cm))
 
 content.append(
     Paragraph(
-        "The current RBAC is <b>flat</b>: role logic lives in endpoint guards and query filters. "
-        "This is easy to reason about with three roles, but does not scale. Here is how I would "
-        "evolve it for a fourth role (e.g. <i>school_admin</i>) or nested organisations:",
+        "The current RBAC model implements role checks directly at the endpoint level. "
+        "To scale this system for additional roles (e.g., <i>school_admin</i>) or multi-tenant organizational hierarchies, "
+        "the architecture can evolve as follows:",
         body_style,
     )
 )
 
 content.append(
     Paragraph(
-        "• <b>Introduce an organisations table</b> with a self-referential <i>parent_org_id</i> "
-        "column to model nested org trees (school → district → state). Each user, student, and "
-        "session would gain an <i>org_id</i> FK.",
+        "• <b>Organization Hierarchy:</b> Add an <i>organisations</i> table with parent-child relationships (e.g. School → District). "
+        "Assigning an <i>org_id</i> foreign key to users, students, and sessions enables enterprise multi-tenancy.",
         bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "• <b>Move from role ENUM to a permissions table</b> (role → permission many-to-many). "
-        "Rather than hard-coding <i>if role == 'teacher'</i> throughout the codebase, each "
-        "endpoint declares which permission it requires (e.g. <i>sessions:read</i>, "
-        "<i>evaluations:trigger</i>). The <i>require_roles</i> dependency becomes "
-        "<i>require_permission</i>.",
+        "• <b>Granular Permissions System:</b> Decouple roles from endpoints by introducing a permission-based system "
+        "(e.g. <i>session:read</i>, <i>evaluation:create</i>). Endpoints verify specific permissions rather than hardcoded roles.",
         bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "• <b>Row-level security in PostgreSQL</b> via RLS policies would push org-scoped "
-        "filtering into the database itself, so every query automatically sees only its org's "
-        "data without application-level WHERE clauses.",
-        bullet_style,
-    )
-)
-
-content.append(
-    Paragraph(
-        "• <b>For the fourth role</b> (<i>school_admin</i>), add the ENUM value, create "
-        "its permission set, and wire it in the dependency — no existing endpoint changes "
-        "if permissions are the abstraction layer.",
+        "• <b>Database Row-Level Security (RLS):</b> Use PostgreSQL RLS policies to enforce organizational data boundaries "
+        "directly inside the database engine for seamless security across all queries.",
         bullet_style,
     )
 )
 
 # ── Section 3 ─────────────────────────────────────────────────────────────────
-content.append(Paragraph("3. What is Missing for Production Safety", h2_style))
-content.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#cccccc")))
-content.append(Spacer(1, 0.2 * cm))
+content.append(Paragraph("3. Production Safety &amp; Engineering Readiness", h2_style))
+content.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#CBD5E0")))
+content.append(Spacer(1, 0.15 * cm))
 
 content.append(
     Paragraph(
-        "The following gaps would need to be addressed before shipping this service in production:",
+        "To prepare this evaluation platform for high-traffic production environments, the following production enhancements are recommended:",
         body_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>Migrations strategy:</b> The lifespan handler calls <i>Base.metadata.create_all</i>, "
-        "which is convenient for development but destructive in production (it silently skips "
-        "columns added after initial creation). The Alembic config is already wired; the correct "
-        "approach is to remove <i>create_all</i> from the app and run "
-        "<i>alembic upgrade head</i> as a one-shot init container in the Kubernetes deployment "
-        "or a CI/CD pipeline step before the rolling update.",
+        "• <b>Automated Migration Workflows:</b> Run Alembic schema migrations (`alembic upgrade head`) via CI/CD release pipelines or Kubernetes init-containers, "
+        "disabling automatic runtime table creation in production.",
         bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>Secrets handling:</b> <i>SECRET_KEY</i>, database passwords, and Redis credentials "
-        "must come from a secrets manager (AWS Secrets Manager, HashiCorp Vault, or Kubernetes "
-        "Secrets sealed with Sealed Secrets / External Secrets Operator). They must never appear "
-        "in docker-compose.yml or environment files committed to Git.",
+        "• <b>Secure Secrets Management:</b> Load sensitive configurations (database URI, JWT secret key, Redis password) from environment secret managers "
+        "(AWS Secrets Manager, HashiCorp Vault, or Kubernetes Secrets).",
         bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>Worker reliability:</b> The evaluation worker uses a Redis LIST as a queue. "
-        "If the worker crashes mid-job, the message is lost. The production fix is to use "
-        "BRPOPLPUSH (or Redis Streams with consumer groups) for at-least-once delivery, plus "
-        "a dead-letter queue for jobs that exceed the retry budget.",
+        "• <b>Reliable Job Queuing:</b> Enhance the Redis evaluation worker with reliable queue patterns (e.g. Redis Streams or Celery with RabbitMQ) "
+        "to support job retries, dead-letter queues, and at-least-once task delivery.",
         bullet_style,
     )
 )
 
 content.append(
     Paragraph(
-        "<b>JWT expiry &amp; refresh tokens:</b> The current auth issues a single access token "
-        "with a configurable expiry. Production requires a short-lived access token (15 min) "
-        "paired with a long-lived refresh token stored securely (HttpOnly cookie), with a "
-        "token rotation endpoint and a blocklist (Redis SET) for revoked tokens.",
+        "• <b>Enhanced Security &amp; Observability:</b> Implement rate limiting, HTTP CORS domain restrictions, short-lived JWT access tokens with refresh tokens, "
+        "and structured JSON logging for monitoring and alerting.",
         bullet_style,
     )
 )
 
-content.append(
-    Paragraph(
-        "<b>Rate limiting, CORS hardening, and structured logging:</b> The current CORS policy "
-        "allows all origins. A production deployment should whitelist only known origins, add "
-        "a rate limiter (e.g. slowapi), and emit structured JSON logs (via structlog) to a "
-        "centralised log aggregation system.",
-        bullet_style,
-    )
-)
-
-content.append(Spacer(1, 0.5 * cm))
-content.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#0f3460")))
-content.append(Spacer(1, 0.2 * cm))
-content.append(
-    Paragraph(
-        "Word count: ~480 words &nbsp;|&nbsp; Repository: github.com/Pavithra8805/ed-eval-service",
-        subtitle_style,
-    )
-)
-
+# Build PDF document
 doc.build(content)
-print(f"PDF written to {OUTPUT}")
+print(f"Clean, professional PDF successfully generated: {OUTPUT}")
